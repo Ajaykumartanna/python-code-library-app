@@ -1,60 +1,57 @@
----
+
 services:
   db:
-    image: shaikmustafa/arshad:db
+    image: ajaykumartanna/ajay:database-${BUILD_NUMBER}
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     deploy:
       replicas: 1
     ports:
       - "3306:3306"
     networks:
       - mynetwork
+    volumes:
+      - db_data:/var/lib/mysql
 
   auth_service:
-    image: shaikmustafa/arshad:auth
+    image: ajaykumartanna/ajay:authserver-${BUILD_NUMBER}
     deploy:
       replicas: 1
     ports:
       - "5001:5001"
     networks:
       - mynetwork
-    depends_on:
-      - db
-    
 
   book_service:
-    image: shaikmustafa/arshad:book
+    image: ajaykumartanna/ajay:bookserver-${BUILD_NUMBER}
     deploy:
       replicas: 1
     ports:
       - "5002:5002"
     networks:
       - mynetwork
-    depends_on:
-      - db
+
   borrow_service:
-    image: shaikmustafa/arshad:borrow
+    image: ajaykumartanna/ajay:borrowserver-${BUILD_NUMBER}
     deploy:
       replicas: 1
     ports:
       - "5003:5003"
     networks:
       - mynetwork
-    depends_on:
-      - db
 
   frontend:
-    image: shaikmustafa/arshad:frontend
+    image: ajaykumartanna/ajay:frontend-${BUILD_NUMBER}
     deploy:
       replicas: 1
     ports:
       - "5000:5000"
     networks:
       - mynetwork
-    depends_on:
-      - auth_service
-      - book_service
-      - borrow_service
 
 networks:
   mynetwork:
-    driver: bridge
+    driver: overlay
+
+volumes:
+  db_data:
